@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/hex"
+	"log"
 	"net"
+	"os"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -13,11 +16,13 @@ func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
 		DstIP:    dstIP,
 		Protocol: layers.IPProtocolICMPv4,
 		Version:  4,
-		TTL:      20,
+		TTL:      32,
 	}
 
 	icmp := &layers.ICMPv4{
 		TypeCode: layers.CreateICMPv4TypeCode(layers.ICMPv4TypeEchoRequest, 0),
+		Id:       uint16(os.Getpid()) & 0xffff,
+		Seq:      0x0001,
 	}
 
 	buf := gopacket.NewSerializeBuffer()
@@ -27,5 +32,6 @@ func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Printf("[payload] \n%v", hex.Dump(buf.Bytes()))
 	return buf.Bytes(), nil
 }
