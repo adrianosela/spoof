@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
-	"log"
 	"net"
 	"os"
 
@@ -16,7 +14,7 @@ func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
 		DstIP:    dstIP,
 		Protocol: layers.IPProtocolICMPv4,
 		Version:  4,
-		TTL:      64,
+		TTL:      32,
 	}
 
 	icmp := &layers.ICMPv4{
@@ -32,6 +30,5 @@ func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
 		return nil, err
 	}
 
-	log.Printf("[payload] \n%v", hex.Dump(buf.Bytes()))
 	return buf.Bytes(), nil
 }
