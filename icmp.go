@@ -32,9 +32,6 @@ func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
 		return nil, err
 	}
 
-	pl := buf.Bytes()
-	pl[0] = byte(8) // gopacket marks ICMP ECHO REQUEST as ICMP type 69 which is incorrect
-
 	log.Printf("[payload] \n%v", hex.Dump(buf.Bytes()))
 	return buf.Bytes(), nil
 }
