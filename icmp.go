@@ -16,7 +16,7 @@ func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
 		DstIP:    dstIP,
 		Protocol: layers.IPProtocolICMPv4,
 		Version:  4,
-		TTL:      32,
+		TTL:      64,
 	}
 
 	icmp := &layers.ICMPv4{
@@ -28,7 +28,7 @@ func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
 	buf := gopacket.NewSerializeBuffer()
 	opts := gopacket.SerializeOptions{FixLengths: true, ComputeChecksums: true}
 
-	if err := gopacket.SerializeLayers(buf, opts, ip, icmp); err != nil {
+	if err := gopacket.SerializeLayers(buf, opts, icmp, ip); err != nil {
 		return nil, err
 	}
 
