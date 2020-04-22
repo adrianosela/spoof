@@ -34,6 +34,6 @@ func newSmurf(target, slaves net.IP) (*smurf, error) {
 	}, nil
 }
 
-func (s *smurf) send() error {
+func (s *smurf) execute() error {
 	return syscall.Sendto(s.sockfd, s.payload, 0, s.slaves)
 }
