@@ -9,7 +9,7 @@ import (
 
 type smurf struct {
 	sockfd  int
-	network  *syscall.SockaddrInet4
+	network *syscall.SockaddrInet4
 	payload []byte
 }
 
@@ -29,7 +29,7 @@ func newSmurf(victim, network net.IP) (*smurf, error) {
 
 	return &smurf{
 		sockfd:  fd,
-		network:  &remote,
+		network: &remote,
 		payload: pl,
 	}, nil
 }

