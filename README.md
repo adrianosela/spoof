@@ -1,5 +1,9 @@
 # smurf
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/adrianosela/smurf)](https://goreportcard.com/report/github.com/adrianosela/smurf)
+[![Documentation](https://godoc.org/github.com/adrianosela/smurf?status.svg)](https://godoc.org/github.com/adrianosela/smurf)
+[![license](https://img.shields.io/github/license/adrianosela/smurf.svg)](https://github.com/adrianosela/smurf/blob/master/LICENSE)
+
 carry out a smurf attack
 
 ![](.media/smurf_attack_diagram.png)
