@@ -19,3 +19,7 @@ $ go build
 ```
 $ sudo ./smurf
 ```
+
+### Wireshark:
+
+![](.media/run.gif)
