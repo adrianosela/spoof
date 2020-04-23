@@ -26,7 +26,7 @@ func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
 	buf := gopacket.NewSerializeBuffer()
 	opts := gopacket.SerializeOptions{FixLengths: true, ComputeChecksums: true}
 
-	if err := gopacket.SerializeLayers(buf, opts, icmp, ip); err != nil {
+	if err := gopacket.SerializeLayers(buf, opts, ip, icmp); err != nil {
 		return nil, err
 	}
 
