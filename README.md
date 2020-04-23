@@ -11,11 +11,11 @@ carry out a smurf attack
 * build this directory with `go build`
 
 ```
-go build .
+$ go build
 ```
 
 * run the program with privileged access:
 
 ```
-sudo ./smurf
+$ sudo ./smurf
 ```

