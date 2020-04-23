@@ -26,6 +26,6 @@ $ sudo ./smurf
 
 ### Wireshark:
 
-Example using my own host as the victim, with my LAN's broadcast as the network address.
+> example using my own host as the victim, with my LAN's broadcast as the network address:
 
 ![](.media/run.gif)
