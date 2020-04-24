@@ -4,7 +4,7 @@
 [![Documentation](https://godoc.org/github.com/adrianosela/pwn?status.svg)](https://godoc.org/github.com/adrianosela/pwn)
 [![license](https://img.shields.io/github/license/adrianosela/pwn.svg)](https://github.com/adrianosela/pwn/blob/master/LICENSE)
 
-A command line tool for carrying out spoofing type attacks on a Local Area Network (LAN)
+A command line utility for injecting spoofed frames into a network
 
 ### Usage:
 
