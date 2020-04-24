@@ -8,6 +8,7 @@ import (
 	"github.com/google/gopacket/layers"
 )
 
+// returns a wire-ready Ethernet frame encapsulating an IPv4 ICMP packet
 func spoofedICMP(sip, dip net.IP, smac, dmac net.HardwareAddr) ([]byte, error) {
 	buf := gopacket.NewSerializeBuffer()
 
