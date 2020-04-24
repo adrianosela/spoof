@@ -8,10 +8,23 @@ import (
 	"github.com/google/gopacket/layers"
 )
 
-func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
+func spoofedICMP(sip, dip net.IP, smac, dmac net.HardwareAddr) ([]byte, error) {
+	buf := gopacket.NewSerializeBuffer()
+
+	opts := gopacket.SerializeOptions{
+		FixLengths:       true,
+		ComputeChecksums: true,
+	}
+
+	eth := &layers.Ethernet{
+		SrcMAC:       smac,
+		DstMAC:       dmac,
+		EthernetType: layers.EthernetTypeIPv4,
+	}
+
 	ip := &layers.IPv4{
-		SrcIP:    spoof, // spoofed source IP
-		DstIP:    dstIP,
+		SrcIP:    sip,
+		DstIP:    dip,
 		Protocol: layers.IPProtocolICMPv4,
 		Version:  4,
 		TTL:      32,
@@ -23,10 +36,7 @@ func spoofedICMP(spoof, dstIP net.IP) ([]byte, error) {
 		Seq:      0x0001,
 	}
 
-	buf := gopacket.NewSerializeBuffer()
-	opts := gopacket.SerializeOptions{FixLengths: true, ComputeChecksums: true}
-
-	if err := gopacket.SerializeLayers(buf, opts, ip, icmp); err != nil {
+	if err := gopacket.SerializeLayers(buf, opts, eth, ip, icmp); err != nil {
 		return nil, err
 	}
 
