@@ -23,7 +23,7 @@ $ pwn --help
 ## Contents
 
 * [Smurf](#smurf-attack)
-* [Man-In-The-Middle](#lan-man-in-the-middle)
+* [ARP Cache Poisoning](#arp-cache-poisoning)
 
 ### Smurf Attack
 
@@ -31,6 +31,6 @@ $ pwn --help
 
 // TODO
 
-### LAN Man In The Middle
+### ARP Cache Poisoning
 
 // TODO
