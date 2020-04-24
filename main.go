@@ -64,7 +64,7 @@ func main() {
 		{
 			Name:    "attack",
 			Aliases: []string{"r"},
-			Usage:   "carry out smurf attack against a remote victim",
+			Usage:   "carry out a smurf attack against a remote victim",
 			Flags: []cli.Flag{
 				asMandatory(victimFlag),
 				asMandatory(proxyFlag),
