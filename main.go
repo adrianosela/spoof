@@ -54,7 +54,7 @@ func main() {
 	app := cli.NewApp()
 	app.Version = version
 	app.EnableBashCompletion = true
-	app.Usage = "a utility for injecting spoofed frames into a live link"
+	app.Usage = "a utility for injecting spoofed frames into the network"
 	app.Commands = []cli.Command{
 		{
 			Name:    "smurf",
