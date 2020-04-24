@@ -1,4 +1,4 @@
-module github.com/adrianosela/smurf
+module github.com/adrianosela/pwn
 
 go 1.14
 

