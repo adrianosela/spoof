@@ -40,7 +40,7 @@ func smurfHandler(ctx *cli.Context) error {
 		return err
 	}
 
-	interval := time.Millisecond * 1000
+	interval := time.Millisecond * 10
 	fmt.Printf(banner, victim, proxy, interval.String(), hex.Dump(p.payload))
 	for {
 		if err = p.execute(); err != nil {
