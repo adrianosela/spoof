@@ -1,31 +1,36 @@
-# smurf
+# pwn
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/adrianosela/smurf)](https://goreportcard.com/report/github.com/adrianosela/smurf)
-[![Documentation](https://godoc.org/github.com/adrianosela/smurf?status.svg)](https://godoc.org/github.com/adrianosela/smurf)
-[![license](https://img.shields.io/github/license/adrianosela/smurf.svg)](https://github.com/adrianosela/smurf/blob/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/adrianosela/pwn)](https://goreportcard.com/report/github.com/adrianosela/pwn)
+[![Documentation](https://godoc.org/github.com/adrianosela/pwn?status.svg)](https://godoc.org/github.com/adrianosela/pwn)
+[![license](https://img.shields.io/github/license/adrianosela/pwn.svg)](https://github.com/adrianosela/pwn/blob/master/LICENSE)
 
-carry out a smurf attack
-
-![](.media/smurf_attack_diagram.png)
+A command line tool for carrying out spoofing type attacks on a Local Area Network (LAN)
 
 ### Usage:
 
-* modify `main.go` to specify the desired victim IP address, as well as the IP corresponding to the network's broadcast address.
-
-* build this directory with `go build`
+* build the CLI with `make`
 
 ```
-$ go build
+$ make
 ```
 
-* run the program with privileged access:
+* run the cli:
 
 ```
-$ sudo ./smurf
+$ pwn --help
 ```
 
-### Wireshark:
+## Contents
 
-> example using my own host as the victim, with my LAN's broadcast as the network address:
+* [Smurf](#smurf-attack)
+* [Man-In-The-Middle](#lan-man-in-the-middle)
 
-![](.media/run.gif)
+### Smurf Attack
+
+![](.media/smurf_attack_diagram.png)
+
+// TODO
+
+### LAN Man In The Middle
+
+// TODO

