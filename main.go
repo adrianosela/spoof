@@ -11,6 +11,18 @@ import (
 	cli "gopkg.in/urfave/cli.v1"
 )
 
+const banner = `
+  /$$$$$$  /$$  /$$  /$$ /$$$$$$$
+ /$$__  $$| $$ | $$ | $$| $$__  $$
+| $$  \ $$| $$ | $$ | $$| $$  \ $$
+| $$  | $$| $$ | $$ | $$| $$  | $$
+| $$$$$$$/|  $$$$$/$$$$/| $$  | $$
+| $$____/  \_____/\___/ |__/  |__/
+| $$
+| $$
+|__/
+`
+
 var version string // injected at build-time
 
 func smurfValidator(ctx *cli.Context) error {
@@ -82,6 +94,8 @@ func main() {
 		c.App.Run([]string{"help"})
 		fmt.Printf("\ncommand \"%s\" does not exist\n", command)
 	}
+
+	fmt.Println(banner)
 	if err := app.Run(os.Args); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
