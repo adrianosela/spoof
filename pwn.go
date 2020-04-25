@@ -13,7 +13,7 @@ type pwner struct {
 	payload []byte
 }
 
-func newPwner(sIP, dIP net.IP, iface string, gwMAC net.HardwareAddr) (*pwner, error) {
+func newPwner(sIP, dIP net.IP, iface string) (*pwner, error) {
 	wire, err := pcap.OpenLive(iface, 1024, false, pcap.BlockForever)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not open live")
@@ -25,8 +25,8 @@ func newPwner(sIP, dIP net.IP, iface string, gwMAC net.HardwareAddr) (*pwner, er
 	payload, err := payloads.Build(payloads.TypeICMPEcho, payloads.Config{
 		SrcIP:  sIP,
 		DstIP:  dIP,
-		SrcMAC: nif.HardwareAddr,
-		DstMAC: gwMAC,
+		SrcMAC: nif.HardwareAddr,                               // doesn't matter
+		DstMAC: net.HardwareAddr{255, 255, 255, 255, 255, 255}, // broadcast MAC
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "could not build a spoofed payload")

@@ -6,5 +6,8 @@ all: setbin
 setbin: build
 	cp $(NAME) /usr/local/bin
 
-build:
+build: dep
 	go build -ldflags "-X main.version=$(HASH)" -o $(NAME)
+
+dep:
+	go get -v

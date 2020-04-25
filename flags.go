@@ -12,21 +12,25 @@ const (
 )
 
 var (
-	victimFlag = cli.StringFlag{
-		Name:  "victim, v",
-		Usage: "IP address of victim for smurf attack",
+	targetFlag = cli.StringFlag{
+		Name:  "target, t",
+		Usage: "attack target IP address",
 	}
-	proxyFlag = cli.StringFlag{
-		Name:  "proxy, p",
-		Usage: "IP address of network to help in the attack",
+	broadcastFlag = cli.StringFlag{
+		Name:  "broadcast, b",
+		Usage: "network broadcast IP address",
 	}
 	gatewayFlag = cli.StringFlag{
 		Name:  "gateway, g",
-		Usage: "MAC address of gateway router for LAN",
+		Usage: "network gateway MAC address",
 	}
 	ifaceFlag = cli.StringFlag{
 		Name:  "iface, i",
-		Usage: "name of network interface to use",
+		Usage: "network interface to use",
+	}
+	everyFlag = cli.StringFlag{
+		Name:  "every, e",
+		Usage: "payload send interval e.g. \"10ns\", \"5us\", \"8ms\", \"1s\"",
 	}
 )
 
