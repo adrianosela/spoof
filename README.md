@@ -19,18 +19,3 @@ $ make
 ```
 $ spoof --help
 ```
-
-## Contents
-
-* [Smurf](#smurf-attack)
-* [ARP Cache Poisoning](#arp-cache-poisoning)
-
-### Smurf Attack
-
-![](.media/smurf_attack_diagram.png)
-
-// TODO
-
-### ARP Cache Poisoning
-
-// TODO
