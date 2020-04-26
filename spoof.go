@@ -3,17 +3,17 @@ package main
 import (
 	"net"
 
-	"github.com/adrianosela/pwn/payloads"
+	"github.com/adrianosela/spoof/payloads"
 	"github.com/google/gopacket/pcap"
 	"github.com/pkg/errors"
 )
 
-type pwner struct {
+type spoofer struct {
 	wire    *pcap.Handle
 	payload []byte
 }
 
-func newPwner(sIP, dIP net.IP, iface string) (*pwner, error) {
+func newSpoofer(sIP, dIP net.IP, iface string) (*spoofer, error) {
 	wire, err := pcap.OpenLive(iface, 1024, false, pcap.BlockForever)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not open live")
@@ -31,16 +31,16 @@ func newPwner(sIP, dIP net.IP, iface string) (*pwner, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "could not build a spoofed payload")
 	}
-	return &pwner{
+	return &spoofer{
 		wire:    wire,
 		payload: payload,
 	}, nil
 }
 
-func (p *pwner) execute() error {
-	return p.wire.WritePacketData(p.payload)
+func (s *spoofer) inject() error {
+	return s.wire.WritePacketData(s.payload)
 }
 
-func (p *pwner) close() {
-	p.wire.Close()
+func (s *spoofer) close() {
+	s.wire.Close()
 }

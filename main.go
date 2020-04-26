@@ -12,15 +12,17 @@ import (
 )
 
 const banner = `
-  /$$$$$$  /$$  /$$  /$$ /$$$$$$$
- /$$__  $$| $$ | $$ | $$| $$__  $$
-| $$  \ $$| $$ | $$ | $$| $$  \ $$
-| $$  | $$| $$ | $$ | $$| $$  | $$
-| $$$$$$$/|  $$$$$/$$$$/| $$  | $$
-| $$____/  \_____/\___/ |__/  |__/
-| $$
-| $$
-|__/
+                                         $$$$$$\
+                                        $$  __$$\
+ $$$$$$$\  $$$$$$\   $$$$$$\   $$$$$$\  $$ /  \__|
+$$  _____|$$  __$$\ $$  __$$\ $$  __$$\ $$$$\
+\$$$$$$\  $$ /  $$ |$$ /  $$ |$$ /  $$ |$$  _|
+ \____$$\ $$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |
+$$$$$$$  |$$$$$$$  |\$$$$$$  |\$$$$$$  |$$ |
+\_______/ $$  ____/  \______/  \______/ \__|
+          $$ |
+          $$ |
+          \__|
 `
 
 var version string // injected at build-time
@@ -47,14 +49,14 @@ func smurfHandler(ctx *cli.Context) error {
 		return errors.New("invalid time string given")
 	}
 
-	p, err := newPwner(target, broadcast, ctx.String(name(ifaceFlag)))
+	s, err := newSpoofer(target, broadcast, ctx.String(name(ifaceFlag)))
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf(banner, target, broadcast, every.String(), hex.Dump(p.payload))
+	fmt.Printf(banner, target, broadcast, every.String(), hex.Dump(s.payload))
 	for {
-		if err = p.execute(); err != nil {
+		if err = s.inject(); err != nil {
 			return err
 		}
 		time.Sleep(every)

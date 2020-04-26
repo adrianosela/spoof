@@ -1,4 +1,4 @@
-module github.com/adrianosela/pwn
+module github.com/adrianosela/spoof
 
 go 1.14
 
