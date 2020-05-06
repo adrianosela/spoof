@@ -69,7 +69,7 @@ func smurfHandler(ctx *cli.Context) error {
 		return errors.Wrap(err, "could not build payload")
 	}
 
-	banner := "Victim: %s\nBroadcasting ICMP to: %s\nEvery: %s\nPayload:\n---\n%v---\n"
+	banner := "Victim: %s\nUsing Broadcast: %s\nEvery: %s\nPayload:\n---\n%v---\n"
 	fmt.Printf(banner, target, broadcast, every.String(), hex.Dump(payload))
 
 	exec.Loop(every, func() {
