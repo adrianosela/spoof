@@ -16,10 +16,6 @@ var (
 		Name:  "target, t",
 		Usage: "attack target IP address",
 	}
-	broadcastFlag = cli.StringFlag{
-		Name:  "broadcast, b",
-		Usage: "network broadcast IP address",
-	}
 	gatewayFlag = cli.StringFlag{
 		Name:  "gateway, g",
 		Usage: "network gateway MAC address",

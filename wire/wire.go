@@ -43,3 +43,35 @@ func (w *Wire) Close() {
 func (w *Wire) MAC() net.HardwareAddr {
 	return w.iface.HardwareAddr
 }
+
+// IP returns the IPv4 address of the network interface
+func (w *Wire) IP() (net.IP, net.IPMask, error) {
+	addrs, err := w.iface.Addrs()
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "no ip address found for network interface")
+	}
+
+	var ip net.IP
+	var mask net.IPMask
+
+	for _, addr := range addrs {
+		switch v := addr.(type) {
+		case *net.IPNet:
+			ip = v.IP
+			mask = v.Mask
+		case *net.IPAddr:
+			ip = v.IP
+			mask = ip.DefaultMask()
+		}
+		if ip == nil {
+			continue
+		}
+		ip = ip.To4()
+		if ip == nil {
+			continue
+		}
+		return ip, mask, nil
+	}
+
+	return nil, nil, errors.New("no ip address found for network interface")
+}
