@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"log"
@@ -80,16 +79,6 @@ func smurfHandler(ctx *cli.Context) error {
 	})
 
 	return nil
-}
-
-func broadcastIP(ip net.IP, mask net.IPMask) net.IP {
-	i := binary.BigEndian.Uint32(ip.To4())
-	m := binary.BigEndian.Uint32(net.IP(mask).To4())
-
-	bc := make(net.IP, 4)
-	binary.BigEndian.PutUint32(bc, i|^m)
-
-	return bc
 }
 
 func main() {
