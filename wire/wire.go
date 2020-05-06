@@ -35,7 +35,7 @@ func (w *Wire) Inject(frame []byte) error {
 }
 
 // Close a live link
-func (w *Wire) Close(frame []byte) {
+func (w *Wire) Close() {
 	w.pcap.Close()
 }
 

