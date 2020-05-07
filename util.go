@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-func broadcastIP(ip net.IP, mask net.IPMask) net.IP {
+func getBroadcastIPv4(ip net.IP, mask net.IPMask) net.IP {
 	i := binary.BigEndian.Uint32(ip.To4())
 	m := binary.BigEndian.Uint32(net.IP(mask).To4())
 

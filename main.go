@@ -57,7 +57,7 @@ func smurfHandler(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	broadcast := broadcastIP(ip, mask)
+	broadcast := getBroadcastIPv4(ip, mask)
 
 	payload, err := payloads.Build(payloads.TypeICMPEcho, payloads.Config{
 		SrcIP:  target,
