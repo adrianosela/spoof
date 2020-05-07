@@ -14,11 +14,7 @@ const (
 var (
 	targetFlag = cli.StringFlag{
 		Name:  "target, t",
-		Usage: "attack target IP address",
-	}
-	gatewayFlag = cli.StringFlag{
-		Name:  "gateway, g",
-		Usage: "network gateway MAC address",
+		Usage: "target IP address",
 	}
 	ifaceFlag = cli.StringFlag{
 		Name:  "iface, i",
