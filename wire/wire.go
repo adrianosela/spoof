@@ -44,8 +44,8 @@ func (w *Wire) MAC() net.HardwareAddr {
 	return w.iface.HardwareAddr
 }
 
-// IP returns the IPv4 address of the network interface
-func (w *Wire) IP() (net.IP, net.IPMask, error) {
+// IPv4 returns the IPv4 address of the network interface
+func (w *Wire) IPv4() (net.IP, net.IPMask, error) {
 	addrs, err := w.iface.Addrs()
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "no ip address found for network interface")
