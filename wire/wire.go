@@ -39,7 +39,7 @@ func (w *Wire) Close() {
 	w.pcap.Close()
 }
 
-// MAC returns the hardware address of the live link
+// MAC returns the hardware address of the network interface
 func (w *Wire) MAC() net.HardwareAddr {
 	return w.iface.HardwareAddr
 }
