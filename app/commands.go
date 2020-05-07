@@ -90,7 +90,7 @@ func smurfHandler(ctx *cli.Context) error {
 	}
 	defer w.Close()
 
-	ip, mask, err := w.IP()
+	ip, mask, err := w.IPv4()
 	if err != nil {
 		return err
 	}
