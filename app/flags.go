@@ -24,6 +24,22 @@ var (
 		Name:  "every, e",
 		Usage: "payload send interval e.g. \"10ns\", \"5us\", \"8ms\", \"1s\"",
 	}
+	srcIPFlag = cli.StringFlag{
+		Name:  "srcIP",
+		Usage: "source IP",
+	}
+	dstIPFlag = cli.StringFlag{
+		Name:  "dstIP",
+		Usage: "destination IP",
+	}
+	srcMACFlag = cli.StringFlag{
+		Name:  "srcMAC",
+		Usage: "source IP",
+	}
+	dstMACFlag = cli.StringFlag{
+		Name:  "dstMAC",
+		Usage: "destination MAC address",
+	}
 )
 
 // name returns the long name of a flag

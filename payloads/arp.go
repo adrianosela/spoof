@@ -24,6 +24,7 @@ func ARPReply(sIP, dIP net.IP, sMAC, dMAC net.HardwareAddr) ([]byte, error) {
 		DstMAC:       dMAC,
 	}
 	arp := &layers.ARP{
+		Operation:         layers.ARPReply,
 		AddrType:          layers.LinkTypeEthernet,
 		Protocol:          layers.EthernetTypeIPv4,
 		HwAddressSize:     6,
