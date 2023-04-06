@@ -73,7 +73,7 @@ var commands = []cli.Command{
 }
 
 func smurfValidator(ctx *cli.Context) error {
-	return assertSet(ctx, targetFlag, dstMACFlag)
+	return assertSet(ctx, targetFlag)
 }
 
 func smurfHandler(ctx *cli.Context) error {
